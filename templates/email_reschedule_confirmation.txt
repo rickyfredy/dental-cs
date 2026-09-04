@@ -1,0 +1,24 @@
+Subject: Appointment Rescheduled — {clinic_name}
+
+Dear {patient_name},
+
+Your appointment has been successfully rescheduled. Here are the updated details:
+
+  Clinic:      {clinic_name}
+  Dentist:     {doctor_name}
+  New Date:    {selected_date}
+  New Time:    {selected_time}
+
+Location:
+  {clinic_address}
+  {mrt_details}
+
+Operating Hours:
+  {operating_hours}
+
+If you need to make further changes, please contact us at {clinic_phone} or reply to this email.
+
+We look forward to seeing you!
+
+Best regards,
+{clinic_name}

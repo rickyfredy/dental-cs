@@ -1,0 +1,9 @@
+Please confirm your booking:
+
+👤 Patient: {patient_name}
+🦷 Dentist: {doctor_name}
+📅 Date: {selected_date}
+⏰ Time: {selected_time}
+📝 Reason: {visit_reason}
+
+Is this correct?

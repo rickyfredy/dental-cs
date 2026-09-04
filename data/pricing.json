@@ -1,0 +1,44 @@
+{
+  "consultation": {
+    "label": "Consultation",
+    "range_low": 40,
+    "range_high": 70,
+    "medisave_claimable": false
+  },
+  "scaling_polishing": {
+    "label": "Scaling & Polishing",
+    "range_low": 80,
+    "range_high": 130,
+    "medisave_claimable": false
+  },
+  "fillings": {
+    "label": "Dental Fillings (per tooth)",
+    "range_low": 70,
+    "range_high": 150,
+    "medisave_claimable": false
+  },
+  "wisdom_tooth_surgery": {
+    "label": "Wisdom Tooth Surgery",
+    "range_low": 600,
+    "range_high": 1250,
+    "medisave_claimable": true
+  },
+  "veneers": {
+    "label": "Veneers (per tooth)",
+    "range_low": 800,
+    "range_high": 1500,
+    "medisave_claimable": false
+  },
+  "teeth_whitening": {
+    "label": "Teeth Whitening",
+    "range_low": 300,
+    "range_high": 600,
+    "medisave_claimable": false
+  },
+  "implants": {
+    "label": "Dental Implants (per tooth)",
+    "range_low": 2500,
+    "range_high": 4500,
+    "medisave_claimable": true
+  }
+}

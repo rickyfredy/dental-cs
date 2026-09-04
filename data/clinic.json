@@ -1,0 +1,9 @@
+{
+  "clinic_name": "Bright Smile Dental Clinic",
+  "clinic_address": "123 Punggol Central, #01-01, Singapore 820123",
+  "mrt_details": "Punggol MRT (Exit A), 3 minutes walk",
+  "operating_hours": "Mon-Fri: 9AM-6PM | Sat: 9AM-1PM | Sun & PH: Closed",
+  "chas_available": true,
+  "medisave_available": true,
+  "clinic_phone": "+65 6XXX XXXX"
+}

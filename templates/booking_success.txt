@@ -1,0 +1,7 @@
+✅ Appointment Confirmed!
+
+Your booking with {doctor_name} on {selected_date} at {selected_time} has been confirmed.
+We look forward to seeing you at {clinic_name}! 🦷
+
+📍 {clinic_address}
+🚇 {mrt_details}

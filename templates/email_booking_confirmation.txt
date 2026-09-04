@@ -1,0 +1,25 @@
+Subject: Appointment Confirmation — {clinic_name}
+
+Dear {patient_name},
+
+Your appointment has been successfully booked. Here are the details:
+
+  Clinic:      {clinic_name}
+  Dentist:     {doctor_name}
+  Date:        {selected_date}
+  Time:        {selected_time}
+  Reason:      {visit_reason}
+
+Location:
+  {clinic_address}
+  {mrt_details}
+
+Operating Hours:
+  {operating_hours}
+
+If you need to reschedule or cancel, please contact us at {clinic_phone} or reply to this email.
+
+We look forward to seeing you!
+
+Best regards,
+{clinic_name}

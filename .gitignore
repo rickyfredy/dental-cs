@@ -1,0 +1,43 @@
+# ── Secrets & credentials (never commit) ─────────────────────────────
+# Environment config — contains bot token, API keys, SMTP password
+.env
+.env.local
+.env.*.local
+
+# Google Calendar OAuth
+# credentials.json = OAuth client secrets from Google Cloud Console
+# token.json       = generated OAuth token (grants calendar access)
+credentials.json
+token.json
+
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Node / Next.js (website/) ────────────────────────────────────────
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+.eslintcache
+.npm/
+npm-debug.log*
+yarn-error.log*
+
+# ── OS & editor cruft ────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+.idea/
+.vscode/
+*.swp

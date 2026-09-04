@@ -1,0 +1,2 @@
+✅ Your appointment on {appt_date} at {appt_time} has been cancelled.
+We hope to see you again at {clinic_name}. Take care! 🦷

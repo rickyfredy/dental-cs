@@ -1,0 +1,3 @@
+Please enter your email address so we can send you a confirmation of your appointment.
+
+Example: john@example.com

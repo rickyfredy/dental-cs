@@ -1,0 +1,5 @@
+Great! Here are the available slots for {selected_date} with {doctor_name}:
+
+{available_slots}
+
+Please select a time to continue, or type 'back' to choose a different date.

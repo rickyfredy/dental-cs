@@ -1,0 +1,5 @@
+Please enter your preferred date (DD/MM/YYYY) or type 'earliest':
+
+After that, choose a time window:
+[1] Morning (9AM-12PM)
+[2] Afternoon (2PM-6PM)

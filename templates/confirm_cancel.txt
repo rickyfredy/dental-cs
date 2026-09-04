@@ -1,0 +1,4 @@
+You are about to cancel your appointment on {appt_date} at {appt_time} with {doctor_name}.
+
+⚠️ Note: Cancellations within 24 hours may incur a clinic administrative fee.
+Do you wish to proceed?
