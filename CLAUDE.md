@@ -77,11 +77,11 @@ Telegram message / button press
 - **`guardrails.py`** — Pre-LLM keyword filter. Two tiers: critical emergency keywords (breathing difficulty, uncontrolled bleeding, severe facial swelling) → immediate A&E redirect; general medical keywords (pain, bleeding, emergency, swelling, toothache, antibiotic) → emergency response template.
 - **`session_manager.py`** — Per-user session tracking. Stores conversation history (rolling 20-message window), current state machine state, collected form data, form step, retry count, and selected doctor/date/time. `UserSession` class per user.
 - **`state_machine.py`** — Dialogue state machine. Defines all conversation states (menu, form_collection, doctor_select, slots, confirmation, static_display, triage, handoff), their templates, options, and transitions. Loads doctor data from `data/doctors.json` and clinic info from `data/clinic.json`.
-- **`llm_client.py`** — LLM abstraction. Two functions: `get_llm_response()` for calendar intent extraction (structured JSON), `interpret_menu_choice()` for mapping free-form user input to menu options. Provider selected at runtime via `settings.llm_provider`.
+- **`llm_client.py`** — LLM abstraction. Two functions: `interpret_menu_choice()` (used by the harness to map free-form text to a menu option) and `get_llm_response()` (structured calendar-intent JSON — currently defined but not yet wired into the harness; date parsing is done with regex in `_parse_date()` instead). Provider selected at runtime via `settings.llm_provider`.
 - **`template_manager.py`** — Loads `.txt` template files from `templates/` and renders them with `{variable}` substitution. Templates cached in memory; `reload_all()` clears cache for hot-reloading during development.
-- **`calendar_service.py`** — Google Calendar integration. OAuth via `credentials.json`/`token.json`. `check_availability(date)` returns busy blocks + computed free slots. `book_appointment(date, time, patient_name)` creates a calendar event in the clinic timezone.
+- **`calendar_service.py`** — Google Calendar integration. OAuth via `credentials.json`/`token.json`. `check_availability(date, calendar_id=...)` returns busy blocks + computed free slots. `book_appointment(date, time, patient_name, calendar_id=...)` creates a calendar event in the clinic timezone. Both accept a per-doctor `calendar_id`; the harness resolves it via `state_machine.get_doctor_calendar_id()` — see *Per-doctor calendars* below.
 - **`email_service.py`** — SMTP email confirmation service. Sends appointment confirmation emails to patients after booking or reschedule. Uses built-in `smtplib` (no external deps). Email body loaded from template files (`email_booking_confirmation.txt`, `email_reschedule_confirmation.txt`) so wording is editable without code changes. Best-effort: failures are logged but never break the booking flow.
-- **`telegram_bot.py`** — Thin channel layer. Handles Telegram text messages and inline button callbacks, forwards to `harness.process_message()`, renders replies with inline keyboards. Separated from core logic for future WhatsApp swap.
+- **`telegram_bot.py`** — Thin channel layer. Handles Telegram text messages and inline button callbacks, forwards to `harness.process_message()`, renders replies with inline keyboards. Separated from core logic for future WhatsApp swap. The harness is synchronous, so callbacks are dispatched via `asyncio.to_thread(process_message, ...)` from this async layer.
 - **`harness.py`** — Core orchestration. `process_message(user_id, text, callback_data)` runs the pipeline: guardrail → state machine → LLM (if needed) → calendar action → email confirmation → template rendering. Returns a `HarnessResult` with text and keyboard data. Channel-agnostic.
 
 ### Data files (`data/`)
@@ -93,6 +93,8 @@ Telegram message / button press
 ### Template files (`templates/`)
 
 All bot responses are stored as `.txt` files with `{variable}` placeholders. Developers can modify wording without touching code. Key templates: `welcome.txt`, `appointment_menu.txt`, `doctor_selection.txt`, `date_time_slot.txt`, `confirmation.txt`, `booking_success.txt`, `emergency_triage.txt`, `pricing.txt`, etc. Email templates: `email_booking_confirmation.txt`, `email_reschedule_confirmation.txt` (first line `Subject: ...` is extracted as the email subject; remaining lines form the body).
+
+Menu/triage states are rendered with a `{menu_options}` variable — a numbered list of the state's options generated from the state machine (`back`/`home` nav entries excluded). Any menu template can include it to show the choices in the message body as well as buttons (`welcome.txt` does); templates that omit the placeholder are unaffected.
 
 ### Dialogue flow (state machine)
 
@@ -107,6 +109,10 @@ The bot follows a state-machine dialogue flow with these main branches:
 
 When booking, users can choose a specific dentist (from `data/doctors.json`) or select "No Preference" for flexible assignment. The selected doctor's schedule is used to filter available time slots, combined with Google Calendar availability checks.
 
+### Per-doctor calendars
+
+Each doctor in `data/doctors.json` carries a `calendar_id_env` field naming an env var (e.g. `GOOGLE_CALENDAR_ID_1`). `state_machine.get_doctor_calendar_id(doctor_id)` looks that env var up on the `settings` singleton (lowercasing the name → attribute), falling back to the default `GOOGLE_CALENDAR_ID` when the value is `"primary"` or absent. The resolved ID is passed as `calendar_id=` to `calendar_service.check_availability()` / `book_appointment()`. "No Preference" always uses the default calendar. To give a doctor a dedicated calendar, set the matching `GOOGLE_CALENDAR_ID_N` in `.env` to a non-`primary` value.
+
 ### Separation of concerns
 
 Channel listener logic (`telegram_bot.py`) is kept distinct from calendar tooling (`calendar_service.py`), state machine (`state_machine.py`), and core orchestration (`harness.py`). To add WhatsApp, create a new `whatsapp_webhook.py` that calls `harness.process_message()` — no changes needed in the harness, state machine, or calendar modules.
@@ -117,9 +123,10 @@ Before any message reaches the LLM, `guardrails.check_guardrail()` scans for med
 
 ### LLM intent protocol
 
-The LLM serves two roles:
+The LLM currently serves one active role:
 1. **Menu navigation** — `interpret_menu_choice()` maps free-form text like "I want to book" to a menu option when the user types instead of pressing a button.
-2. **Calendar intent** — `get_llm_response()` extracts structured JSON: `{"action": "check", "date": "YYYY-MM-DD"}` or `{"action": "book", "date": "YYYY-MM-DD", "time": "HH:MM"}`.
+
+A second function, `get_llm_response()`, is defined to extract structured calendar intent JSON (`{"action": "check"|"book", "date": "YYYY-MM-DD", "time": "HH:MM"}`), but is **not yet wired into the harness** — date/time is collected via the `slots` state handler and `_parse_date()` regex instead. Treat the calendar-intent path as a stub for future work.
 
 The harness gracefully handles JSON decoding failures — if the LLM returns unstructured text, it's passed through as a conversational reply.
 

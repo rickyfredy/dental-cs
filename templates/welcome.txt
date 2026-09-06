@@ -1,2 +1,5 @@
 Hello! Welcome to {clinic_name}. 🦷 I am your digital dental assistant.
-How can I help you manage your dental care today? Please select an option:
+
+How can I help you manage your dental care today? Tap a button below — or just reply with the number:
+
+{menu_options}

@@ -748,7 +748,7 @@ def _render_state(user_id, state_id: str) -> HarnessResult:
     # Render the template
     template_name = state.get("template", "")
     if template_name:
-        rendered = tm.render(template_name, **clinic)
+        rendered = tm.render(template_name, menu_options=_menu_options_text(state), **clinic)
     else:
         rendered = ""
 
@@ -786,6 +786,24 @@ def _render_state(user_id, state_id: str) -> HarnessResult:
 
     end = state.get("end_session", False)
     return HarnessResult(text=rendered, keyboard=keyboard, end_session=end)
+
+
+def _menu_options_text(state: dict) -> str:
+    """Numbered text list of a menu/triage state's options, for embedding in
+    the message body via the ``{menu_options}`` template variable.
+
+    Nav-only entries (back / home) are excluded — they stay as buttons.
+    Returns "" for states without options, so templates without the
+    placeholder are unaffected.
+    """
+    if state.get("type") not in ("menu", "triage"):
+        return ""
+    labels = [
+        opt["label"]
+        for opt in state.get("options", [])
+        if opt.get("data") not in ("back", "home")
+    ]
+    return "\n".join(f"{i}. {label}" for i, label in enumerate(labels, 1))
 
 
 def _render_fallback(user_id, session) -> HarnessResult:
